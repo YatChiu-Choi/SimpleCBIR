@@ -9,18 +9,22 @@ import vocabulary
 class WebService(object):
 	def __init__(self):
 		# 载入图像列表
-
-		self.imlist = generate_imlist.generate_imlist()
-		self.featlist= generate_imlist.generate_sift()
+		dataset_path = 'xxx' 
+		self.imlist = generate_imlist.generate_imlist(dataset_path)
+		self.featlist= generate_imlist.generate_sift(dataset_path)
 
 		self.nbr_images = len(self.imlist)
 		self.ndx = range(self.nbr_images)
 
 		# 载入词汇表
-		#with open('vocabulary.pkl', 'rb') as f:
-		# 	self.voc = pickle.load(f)
-		voc = vocabulary.Vocabulary('ukbenchtest')
-		voc.train(self.featlist, 1000, 10)
+		with open('Voc.pkl', 'rb') as f:
+			self.voc = pickle.load(f)
+			
+		# 可能会由于pickle模块出错，无法正常读入 训练好的Voc，那就只好当场训练了
+		# voc = vocabulary.Vocabulary('holidaytest')
+		# voc.train(self.featlist, 1000, 10)
+		# elf.voc=voc
+
 
 		# 设置可以显示多少幅图像
 		self.maxres = 30  # 30幅
@@ -40,8 +44,8 @@ class WebService(object):
 		"""
 
 	def index(self, query=None):
-
-		self.src = imagesearch.Searcher('web.db', self.voc)
+		database_name = 'test.db'
+		self.src = imagesearch.Searcher(database_name, self.voc)
 
 		html = self.header
 		html += """
@@ -72,6 +76,5 @@ class WebService(object):
 
 	index.exposed = True  #此方法可以被发布
 
-cherrypy.quickstart(WebService(),'/',config=os.path.join(os.path.dirname(__file__), 'service.conf'))
-# '/',
-#cherrypy.q
+if __name__ == '__main__':
+	cherrypy.quickstart(WebService(),'/',config=os.path.join(os.path.dirname(__file__), 'service.conf'))
