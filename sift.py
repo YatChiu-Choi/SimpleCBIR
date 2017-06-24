@@ -1,5 +1,5 @@
-#coding=utf-8
-#sift.py
+# coding=utf-8
+# sift.py
 from PIL import Image
 from pylab import *
 import os
@@ -9,7 +9,7 @@ import generate_imlist
 '''提取sift特征'''
 
 
-def process_image(imagename,resultname,params="--edge-thresh 10 --peak-thresh 5"):#第三个参数应该时命令行的参数
+def process_image(imagename,resultname,params="--edge-thresh 10 --peak-thresh 5"):#第三个参数应该是命令行的参数
 	"""处理一一幅图像，结果保存为pgm格式"""
 	if imagename[-3:]!='pgm':
 		# sift提取处理只能真多pmg格式，若图像的后缀不是.pmg,则转换格式
@@ -17,7 +17,9 @@ def process_image(imagename,resultname,params="--edge-thresh 10 --peak-thresh 5"
 		im.save('tmp.pgm')  ##保存起来，tmp.pgm
 
 	# 调用VLFeat的命令行
-	cmmd = str('sift ' + 'tmp.pgm' + ' --output=' + resultname + ' ' + params)
+	# '/home/bigger/PycharmProjects/yat/glnxa64/sift '注意：这里用绝对路径！
+	sift_path = '/home/bigger/PycharmProjects/yat/glnxa64/sift '  # vlfeat的sift文件所在路径
+	cmmd = str(sift_path + 'tmp.pgm' + ' --output=' + resultname + ' ' + params)
 
 	#把参数以字符串传送到命令行，调用vlfeat的命令行接口
 	os.system(cmmd)  # sift
@@ -62,40 +64,17 @@ def plot_features(im,locs,circle=False):
 	axis('off') # 关闭坐标
 
 
-def match(desc1,desc2):
-	#匹配描述子
-	"""对于第一副图像的每一个描述子，选择其在第二幅图像中匹配"""
-
-
-	#输入第一个描述子和第二个描述子
-	desc1=array([d/linalg.norm(d) for d in desc1])
-	desc2=array([d/linalg.norm(d) for d in desc2]) #归一化
-
-	dist_ratio=0.6
-	desc1_size=desc1.shape
-
-	matchscores=zeros((desc1_size[0],1),'int')
-	desc2t=desc2.T#预先计算转置
-	for i in range(desc1_size[0]):
-		dotprods=dot(desc1[i,:],desc2t)#向量点乘
-		dotprods=0.9999*dotprods #???
-		#反余弦和反排序，返回第二张图像的索引
-		indx=argsort(arccos(dotprods))
-
-		#检查最近邻的角度是否小于dist_ratio成衣二近邻居的角度
-		if arccos(dotprods)[indx[0]]<dist_ratio*arccos(dotprods)[indx[1]]: #???
-			matchscores[i]=int(indx[0])
-		return matchscores
 
 if __name__ == '__main__':
 	# 提取特征与训练词汇
+	
+	# 获取图像的路径列表和特征文件的路径列表
 	imlist = generate_imlist.generate_imlist()
-	featlist = generate_imlist.generate_sift()
+	featlist = generate_imlist.generate_sift()  
 
 	comfirm = input('请确认是否提取特征，是请输入1：')
 
 	if comfirm == 1:
-
 		nbr_images = len(imlist)
 
 		for i in range(nbr_images):
