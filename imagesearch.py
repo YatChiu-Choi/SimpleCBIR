@@ -192,9 +192,10 @@ def plot_results(src,res):
 
 
 if __name__ == '__main__':
-
-	imlist = generate_imlist.generate_imlist()
-	featlist = generate_imlist.generate_sift()
+	
+	dataset_path = 'xxx'
+	imlist = generate_imlist.generate_imlist(dataset_path)
+	featlist = generate_imlist.generate_sift(dataset_path)
 	
 	# number of images
 	nbr_images = len(imlist)
@@ -210,6 +211,7 @@ if __name__ == '__main__':
 	# 创建索引器
 	database_name = 'test.db' # 将生成这个数据库文件
 	indx = Indexer(database_name, voc)
+	# 创建数据库表
 	indx.create_tables()
 
 	# 遍历整个图像库,将特征投影到词汇上并添加到索引中
