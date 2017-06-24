@@ -3,7 +3,7 @@
 #
 '''
 	创建一个词汇类
-	以及在训练图像数据集上训练一个词汇的方法
+	根据提取都的特征，使用 K-Means 聚类构建图像词汇
 
 '''
 
@@ -18,7 +18,7 @@ class Vocabulary(object):
 
 	def __init__(self, name):
 
-		self.name = name  # 图像名字
+		self.name = name  #
 		self.voc = []  # 由单词聚类中心VOC与每个单词对应的逆向文档频率构成的向量
 		self.idf = []  # 逆向文档频率
 		self.trainingdata = []  # trainingdata应改为trainngData增加易读性
@@ -49,11 +49,11 @@ class Vocabulary(object):
 		self.nbr_words = self.voc.shape[0]  # ???获得第一维
 
 		# 遍历所有的训练图像，并投影到词汇上
-		imword = zeros((nbr_images, self.nbr_words))
+		imwords = zeros((nbr_images, self.nbr_words))
 		for i in range(nbr_images):
-			imword[i] = self.project(descr[i])
+			imwords[i] = self.project(descr[i])
 
-		nbr_occurences = sum((imword > 0) * 1, axis=0)  # axis=0,求范数0和
+		nbr_occurences = sum((imwords > 0) * 1, axis=0)  # axis=0,求范数0和
 
 		self.idf = log((1.0 * nbr_images) / (1.0 * nbr_occurences + 1))
 		self.trainingdata = featurefiles
@@ -64,26 +64,34 @@ class Vocabulary(object):
 
 		# 图像单词直方图image_histogram
 		imhist = zeros((self.nbr_words))
-		words, distance = vq(descriptors, self.voc)  # vq是什么函数
+		words, distance = vq(descriptors, self.voc)  # vq是什么函数？
 
 		for w in words:
 			imhist[w] += 1
 		return imhist  # imhist单词的直方图
 
 
+	def get_words(self, descriptors):
+		""" Convert descriptors to words. """
+		return vq(descriptors, self.voc)[0]
+
+
 if __name__ == '__main__':
 	# 提取特征与训练词汇
-	imlist = generate_imlist.generate_imlist()
-	featlist = generate_imlist.generate_sift()
+	data_set_path = 'holidaytest'
+	imlist = generate_imlist.generate_imlist(data_set_path)
+	featlist = generate_imlist.generate_sift(data_set_path)
 
 
 	comfirm = input('请确认是否训练词汇，是请输入1：')
 
 	if comfirm == 1:
-		voc = Vocabulary('ukbenchtest')
+		# 存取图像数据集的路径
+		
+		voc = Vocabulary(data_set_path)
 		voc.train(featlist, 1000, 10)
 
 		# 使用pickle库，这样格式能比较友好保存词汇
-		with open('vocabulary.pkl', 'wb') as f:
+		with open('Voc.pkl', 'wb') as f:
 			pickle.dump(voc, f)
 		print 'vocabulary is:', voc.name, voc.nbr_words
