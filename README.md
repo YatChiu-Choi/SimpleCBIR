@@ -10,16 +10,17 @@ This is a curriculum design, a CBIR system with Python
 1. 系统环境：Ubuntu 16.04
 2. Python 2.7.12
 3. 依赖库:
-> cherrypy
-> pickle
-> PIL
-> sicpy
-> matplotlib
-> pysqlite2
-> urllib
-> numpy
-> （VLFEAT是命令行工具，在Python中使用OS库调用，可以到官方网站下载）
+> 1. cherrypy
+> 2. pickle
+> 2. PIL
+> 3. sicpy
+> 4. matplotlib
+> 5. pysqlite2
+> 6. urllib
+> 7. numpy
+> 8. VLFEAT是命令行工具，用来提取sift的特征的，在Python中使用OS库调用，可以到VLEATF官方网站下载，当然你也可以用其他方法提取特征
 >> （以上包皆在linux下使用Pip安装）
+
 4. 注意：拷贝到你的主机下时，请修改service.conf文件第9行为你在Ubuntu下的代码文件存在的绝对路径
 ## How to Run
 1. 先下载图像数据集和配置好依赖库
