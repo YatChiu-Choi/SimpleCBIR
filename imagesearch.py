@@ -1,9 +1,8 @@
 # coding=utf-8
 
-
-
 from PIL import Image
-from pysqlite2 import dbapi2 as sqlite
+#from pysqlite2 import dbapi2 as sqlite
+import sqlite3
 import sift
 from pylab import *
 import generate_imlist
@@ -20,7 +19,7 @@ class Indexer(object):
 	# 为图片创建索引的类
 	def __init__(self,db,voc):
 
-		self.con=sqlite.connect(db)  # 连接数据库
+		self.con=sqlite3.connect(db)  # 连接数据库
 		self.voc=voc   # 图像词汇表
 
 	def __del__(self):
@@ -95,8 +94,8 @@ class Indexer(object):
 class Searcher(object):
 	# 这个类是用来对输入图片进行检索的
 	def __init__(self,db,voc):
-		 #初始化数据库
-		self.con=sqlite.connect(db,check_same_thread=False)  # 连接到数据库
+		#初始化数据库
+		self.con=sqlite3.connect(db,check_same_thread=False)  # 连接到数据库
 		self.voc=voc  # 提取词汇表
 
 	def __del__(self):
@@ -196,16 +195,21 @@ if __name__ == '__main__':
 
 	imlist = generate_imlist.generate_imlist()
 	featlist = generate_imlist.generate_sift()
-
+	
+	# number of images
 	nbr_images = len(imlist)
+	
+	# 图像集的路径
+	dataset_path = 'holidaytest'
 	# 载入词汇
-	voc = vocabulary.Vocabulary('ukbenchtest')
-	voc.train(featlist, 1000, 10)
-	# with open('vocabulary.pkl', 'rb') as f:
-	# 	voc = pickle.load(f)
+	#voc = vocabulary.Vocabulary(dataset_path)
+	# voc.train(featlist, 1000, 10)
+	with open('vocabulary.pkl', 'rb') as f:
+		voc = pickle.load(f)
+	
 	# 创建索引器
-
-	indx = Indexer('test.db', voc)
+	database_name = 'test.db' # 将生成这个数据库文件
+	indx = Indexer(database_name, voc)
 	indx.create_tables()
 
 	# 遍历整个图像库,将特征投影到词汇上并添加到索引中
@@ -215,7 +219,7 @@ if __name__ == '__main__':
 
 	# 提交到数据库
 	indx.db_commit()
-
+	
 
 
 
