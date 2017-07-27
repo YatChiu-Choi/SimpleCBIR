@@ -1,6 +1,3 @@
 test
 i am editing in  branch dev
-
-
-
-now i edit in branch master while the branch  feature 1 is ahead of master by 1 commit
+testing in branch feature1
